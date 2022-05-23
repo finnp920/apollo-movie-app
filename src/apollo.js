@@ -5,7 +5,24 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   resolvers: {
     Movie: {
-      isLike: () => false,
+      isLiked: () => false,
+    },
+    Mutation: {
+      toggleLikeMovie: (_, { id, isLiked }, { cache }) => {
+        const myMovie = {
+          __typename: "Movie",
+          id: `${id}`,
+          isLiked: `${isLiked}`,
+        };
+        cache.modify({
+          id: cache.identify(myMovie),
+          fields: {
+            isLiked(cachedName) {
+              return !isLiked;
+            },
+          },
+        });
+      },
     },
   },
 });
